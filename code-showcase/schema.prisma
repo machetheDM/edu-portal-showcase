@@ -1,0 +1,307 @@
+// EduPortal Prisma Schema
+// ========================
+// Database: Supabase PostgreSQL
+// NextAuth v5 compatible with custom school domain models
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── NextAuth Core ──────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role      @default(PARENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  parent           Parent?
+  teacher          Teacher?
+  student          Student?
+  accounts         Account[]
+  sessions         Session[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  chatUsages       ChatUsage[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ── School Domain ─────────────────────────────────────────────────────────
+
+model Parent {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  learners Learner[]
+}
+
+model Teacher {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  staffNumber String?
+  department  String?
+  phone       String?
+  createdAt   DateTime @default(now())
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjects SubjectTeacher[]
+  classes  ClassTeacher[]
+}
+
+model Student {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  learnerId String   @unique
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  learner Learner @relation(fields: [learnerId], references: [id])
+}
+
+model Learner {
+  id            String   @id @default(cuid())
+  studentNumber String   @unique
+  firstName     String
+  lastName      String
+  grade         Int
+  eaLearnerNumber String? @unique  // Bridge key to EduAnalytics
+  createdAt     DateTime @default(now())
+
+  marks           Mark[]
+  attendances     Attendance[]
+  predictions     Prediction[]
+  recommendations Recommendation[]
+  careerGoals     CareerGoal[]
+  parents         Parent[]
+  student         Student?
+}
+
+model Subject {
+  id    String @id @default(cuid())
+  code  String @unique
+  name  String
+  grade Int?
+
+  marks           Mark[]
+  subjectTeachers SubjectTeacher[]
+}
+
+model Mark {
+  id        String   @id @default(cuid())
+  learnerId String
+  subjectId String
+  score     Float
+  maxScore  Int      @default(100)
+  term      Int
+  year      Int
+  createdAt DateTime @default(now())
+
+  learner Learner @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+}
+
+model Attendance {
+  id        String   @id @default(cuid())
+  learnerId String
+  date      DateTime
+  status    AttendanceStatus
+  createdAt DateTime @default(now())
+
+  learner Learner @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+}
+
+model Prediction {
+  id         String   @id @default(cuid())
+  learnerId  String
+  riskLevel  RiskLevel
+  confidence Float
+  reason     String?
+  term       Int
+  year       Int
+  createdAt  DateTime @default(now())
+
+  learner Learner @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+}
+
+model Recommendation {
+  id          String   @id @default(cuid())
+  learnerId   String
+  title       String
+  description String?
+  priority    Priority @default(MEDIUM)
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  learner Learner @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+}
+
+model CareerGoal {
+  id           String   @id @default(cuid())
+  learnerId    String
+  programme    String
+  institution  String?
+  requiredAps  Int?
+  createdAt    DateTime @default(now())
+
+  learner Learner @relation(fields: [learnerId], references: [id], onDelete: Cascade)
+}
+
+// ── Content Management ─────────────────────────────────────────────────────
+
+model News {
+  id          String   @id @default(cuid())
+  title       String
+  summary     String?
+  content     String?
+  imageUrl    String?
+  category    String   @default("General")
+  published   Boolean  @default(false)
+  publishAt   DateTime?
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  location    String?
+  published   Boolean  @default(false)
+  publishAt   DateTime?
+  createdAt   DateTime @default(now())
+}
+
+// ── Chat & Messaging ─────────────────────────────────────────────────────
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  content    String
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+}
+
+model ChatUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  date      String   // YYYY-MM-DD
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}
+
+// ── Junction Tables ────────────────────────────────────────────────────
+
+model SubjectTeacher {
+  id        String @id @default(cuid())
+  teacherId String
+  subjectId String
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, subjectId])
+}
+
+model ClassTeacher {
+  id        String @id @default(cuid())
+  teacherId String
+  classId   String
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  class   Class   @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, classId])
+}
+
+model Class {
+  id    String @id @default(cuid())
+  name  String
+  grade Int
+
+  classTeachers ClassTeacher[]
+}
+
+// ── Enums ────────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+  PARENT
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
