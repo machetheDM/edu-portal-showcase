@@ -48,6 +48,8 @@ EduPortal is the public-facing web layer of the EduAnalytics ecosystem. It serve
               └────────────────────────────┘
 ```
 
+For the full cross-system architecture diagram including the EduAnalytics desktop layer, external AI providers, and WhatsApp/Gmail integrations, see the [EduAnalytics Showcase ARCHITECTURE.md](https://github.com/machetheDM/edu-analytics-showcase/blob/main/ARCHITECTURE.md).
+
 ---
 
 ## Data Flow
