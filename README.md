@@ -10,7 +10,7 @@
 
 **Dingaan Mahlatse Machethe**
 Head of STEM Department — South African public high school
-Dual MSc Candidate: Data Science (University of East London) | Cybersecurity — Cloud Security Architect (EC-Council University)
+Dual MSc Candidate: Data Science (University of East London, UK) | Cybersecurity — Cloud Security Architect (EC-Council University, USA)
 
 ---
 
