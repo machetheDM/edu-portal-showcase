@@ -10,7 +10,7 @@
 
 **Dingaan Mahlatse Machethe**
 Head of STEM Department — South African public high school
-Dual MSc Candidate: Data Science (UEL / Unicaf) | Cybersecurity — Cloud Security Architect (EC-Council University)
+Dual MSc Candidate: Data Science (University of East London) | Cybersecurity — Cloud Security Architect (EC-Council University)
 
 ---
 
@@ -46,20 +46,20 @@ The two systems share the same learner records via the bridge key `eaLearnerNumb
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Vercel Edge                           │
+│                        Vercel Edge                          │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
 │  │   Next.js   │  │   Auth.js   │  │  Vercel AI SDK      │  │
 │  │   App Router│  │   (NextAuth)│  │  (Groq / Gemini)    │  │
 │  └──────┬──────┘  └──────┬──────┘  └──────────┬──────────┘  │
-│         │                │                     │             │
-│  ┌──────┴────────────────┴─────────────────────┴──────┐      │
-│  │              Prisma ORM + PostgreSQL Adapter       │      │
+│         │                │                    │             │
+│  ┌──────┴────────────────┴────────────────────┴──────┐      │
+│  │              Prisma ORM + PostgreSQL Adapter      │      │
 │  └──────────────────────────┬────────────────────────┘      │
 │                             │                               │
-│                    ┌────────┴────────┐                       │
-│                    │  Supabase       │                       │
-│                    │  PostgreSQL     │                       │
-│                    └─────────────────┘                       │
+│                    ┌────────┴────────┐                      │
+│                    │  Supabase       │                      │
+│                    │  PostgreSQL     │                      │
+│                    └─────────────────┘                      │
 └─────────────────────────────────────────────────────────────┘
                               │
                               │  eaLearnerNumber bridge
