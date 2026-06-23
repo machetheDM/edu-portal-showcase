@@ -10,7 +10,29 @@
 
 **Dingaan Mahlatse Machethe**
 Head of STEM Department — South African public high school
-Dual MSc Candidate: Data Science (University of East London, UK) | Cybersecurity — Cloud Security Architect (EC-Council University, USA)
+MSc Data Science (University of East London, UK) | MSc Cybersecurity — Cloud Security Architect (EC-Council University, USA) | PGDip Data Science (Regenesys Business School)
+
+---
+
+## Problem → Technique → Result
+
+### The Problem
+Parents, learners, teachers, and administrators at South African public schools have no web portal to access academic performance, attendance, or AI-driven recommendations in real time. Schools cannot afford dedicated development teams or enterprise software licenses. Communication between school and home relies on paper reports sent home with learners — which are frequently lost.
+
+### Techniques Used
+- **Full-Stack Architecture:** Next.js 16 App Router with Server Components, TypeScript end-to-end, Prisma ORM with `@prisma/adapter-pg` querying Supabase PostgreSQL
+- **Authentication & RBAC:** NextAuth v5 with custom Credentials provider, `bcryptjs` password verification, JWT session strategy, route-level access control via `authorized` callback (Admin/Teacher/Student/Parent)
+- **AI Integration:** Vercel AI SDK with Groq `llama-3.3-70b-versatile` — system prompt dynamically injected with live Prisma queries (marks, attendance, APS score, at-risk subjects, career goals). Daily rate limiting tracked in `ChatUsage` table
+- **Role-Based AI Personalization:** Student → own marks + attendance + APS; Parent → all linked children's summaries; Teacher → assigned subjects + classes + school-wide stats
+- **Serverless Automation:** Vercel Cron with `CRON_SECRET` bearer token — atomically publishes scheduled `News` and `Event` records via `updateMany` where `publishAt <= now()`
+- **Database Design:** Prisma schema with NextAuth models + school domain models (Learner, Parent, Teacher, Student, Subject, Mark, Attendance, Prediction, Recommendation, CareerGoal), role-based relations
+
+### The Result
+- **Production portal at mahlontebe.org.za** serving 950+ users with role-based dashboards
+- **AI chatbot** answers learner-specific questions using real database context — not generic responses, but personalised advice based on actual marks and attendance
+- **4-role access system** (Admin/Teacher/Student/Parent) with middleware-enforced route protection — no unauthorised access possible
+- **Automated content publishing** — school news and events go live on schedule without manual intervention
+- **Integrated ecosystem** — shares learner records with EduAnalytics desktop app via `eaLearnerNumber` bridge key, creating a unified offline + online EdTech platform
 
 ---
 
