@@ -8,13 +8,12 @@
 
 ## 📸 Screenshots
 
-| Portal dashboard | Performance analytics |
-|---|---|
-| ![EduPortal dashboard as seen by a signed-in user](screenshots/dashboard.png) | ![Subject performance charts and CAPS level distribution](screenshots/charts.jpg) |
+> **Screenshots are pending, deliberately.** EduPortal runs against live learner
+> records, so any capture of a signed-in view has to be taken against a seeded
+> demo dataset before it can be published. Placeholder images that were not this
+> application have been removed rather than left standing in.
 
-![Curriculum coverage tracker showing content delivery against the annual teaching plan](screenshots/curriculum_1.jpeg)
-
-> 🎥 **Chatbot demo coming soon** — a short GIF of the assistant answering a real question against live marks data.
+> 🎥 **Chatbot demo coming soon** — a short GIF of the assistant answering a question against a seeded demo dataset.
 
 ---
 
@@ -256,7 +255,7 @@ A comparison against the AWS Lambda in the Rams @Elec project — packaging, sec
 
 ## Screenshots
 
-See the [`screenshots/`](screenshots/) directory for UI previews of the portal.
+Pending — see the note at the top of this README.
 
 ---
 
